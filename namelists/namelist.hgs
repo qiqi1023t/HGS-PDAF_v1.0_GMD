@@ -1,0 +1,13 @@
+! Namelist for HGS model configuration 
+&hgs
+
+! Settings for model initialisation
+prefix = 'Flow'
+insuffix = '0001' ! last state output No., e.g., '.0024'
+outsuffix = '0001' ! new ini state No., e.g., '.0000'
+isolf = .true. ! true if overland flow, false if only pm flow
+isconc = .false. ! true with transport, false without
+hgs_version = 2 ! 1 for old HGS version, 2 for HGS 2013+
+
+/
+

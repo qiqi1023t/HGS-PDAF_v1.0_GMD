@@ -1,0 +1,6 @@
+sed -e "s@<ens_size>@${NENS}@g" \
+    -e "s@<path>@\'${RUN_DIR}\'@g" \
+    namelist.pdaf > toto
+    mv toto namelist.pdaf
+
+

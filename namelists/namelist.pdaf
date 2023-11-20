@@ -1,0 +1,59 @@
+! Namelist for PDAF configuration 
+&pdaf
+! General control
+str_daspec='da'
+filtertype=2
+printconfig=.true.
+locweight=3
+loctype=0
+forget=1.0
+varscale=1.0
+type_trans=0
+type_forget=0
+use_global_obs = .true.
+istep=<pdafstep>
+
+! Settings for initialization
+path_init=''
+file_init=''
+read_inistate=.false.
+file_inistate='state_ini_'
+
+! Output control
+write_da = .true.
+write_ens = .false.
+/
+
+! Namelist for parallel configuration for ensemble DA
+&pdaf_parallel
+dim_ens=<ens_size>
+/
+
+! Settings for assimilating HEAD observations
+&pdaf_hgs
+state_type = 1
+Sr=0.09
+damp_k=1.0
+assim_o_head=.true. ! true if head is assimilated, false if not
+rms_obs_head=0.05   ! observation error
+lradius_head=3.0e5  
+sradius_head=3.0e5
+head_fixed_rmse=.true.  ! true if fixed error, else false
+head_exclude_diff=20    ! extreme values to be excluded 
+path_obs_head='path_to_the_observation_of_head'
+file_head_prefix='obs_HEAD'
+file_head_suffix ='.nc'
+
+! Settings for assimilating SATURATION observations
+assim_o_sat=.false.  ! true if saturation is assimilated, false if not
+rms_obs_sat=0.1e8    ! observation error
+lradius_sat=3.0e5
+sradius_sat=3.0e5
+sat_fixed_rmse=.true.  ! true if fixed error, else false
+sat_exclude_diff=1.6   ! extreme values to be excluded
+path_obs_sat='path_to_the_observation_of_saturation'
+file_sat_prefix='obs_SAT'
+file_sat_suffix ='.nc'
+
+ResultPath=<path>
+/

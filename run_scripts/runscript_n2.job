@@ -1,0 +1,189 @@
+#!/bin/bash -x
+#SBATCH --account=
+#SBATCH --nodes=1
+#SBATCH --ntasks=2
+#SBATCH --ntasks-per-node=2
+#SBATCH --output=2ens-%j.out
+#SBATCH --error=2ens-%j.err
+#SBATCH --time=00:30:00
+#SBATCH --partition=batch
+#SBATCH --mail-user=
+#SBATCH --mail-type=ALL
+
+# *** start of job script ***
+ulimit -s unlimited
+set -vx
+export NOPP=1
+
+echo $NCPUS
+# system dependent command lines 
+#module load Stages/2019a
+module load Intel
+module load ParaStationMPI
+module load imkl netCDF netCDF-Fortran  
+export NETCDF_Fortran_INCLUDE_DIRECTORIES=${EBROOTNETCDFMINFORTRAN}/include/
+export NETCDF_C_INCLUDE_DIRECTORIES=${EBROOTNETCDF}/include/
+export NETCDF_CXX_INCLUDE_DIRECTORIES=${EBROOTNETCDFMINCPLUSPLUS4}/include/
+
+module load Python
+module load SciPy-Stack
+
+# end 
+
+export OMP_WAIT_POLICY=PASSIVE
+export CRAY_OMP_CHECK_AFFINITY=TRUE
+export OMP_NUM_THREADS=1
+
+# Ensmeble size
+export NENS=2
+
+# Total time steps
+export TSTEPS=2
+
+# Define run directory
+export BASE_DIR=   # root path to the hgs-pdaf directory
+export HGS_DIR=    # root parth to HGS binary
+export MODEL_DIR=  # root path to the HGS model directory
+export WORK_DIR=   # root path to the output directory
+export ENS_DIR=    # root to the output ensemble directory
+					     # this path needs to be modified to avoid overwriting
+
+# Define if serial model run or DA run
+# A serial run should be done before the ensemble run
+export firstrun=T
+
+# Ensemble run
+# if firstrun=F
+
+mkdir $ENS_DIR
+
+for((ENS=1;ENS<=$NENS;ENS++))
+do
+  ENSstr=`printf %03d $ENS`     # ensemble size should be less than 999, otherwise here we should use a lrager number
+  echo $ENSstr
+  export RUN_DIR=${ENS_DIR}${ENSstr}'/'                # output for all erstarts and model logs
+  mkdir $RUN_DIR
+  cd $RUN_DIR
+  ln -s $BASE_DIR/hgs-pdaf/offline_omi/hgs-pdaf
+  cp $BASE_DIR/namelists/namelist.* .
+  source ${BASE_DIR}/run_scripts/cpl_pdaf.inc.ucr
+  cp namelist.pdaf temp.pdaf
+  cp -r $MODEL_DIR/$ENSstr/* .
+  chmod +x *.sh
+done
+
+cd $ENS_DIR
+
+echo run started at realtime:
+date
+echo `pwd`
+
+# create MPMD configuration file for different runs
+
+if [ -e mpmd.conf ];then
+  rm mpmd.conf
+fi
+touch mpmd.conf
+
+for((i=1;i<=$NENS;i++))
+do
+  ENSstr=`printf %03d $i`
+
+  echo '#!/bin/sh' > hgs-pdaf${ENSstr}
+  echo 'cd '${ENSstr} >> hgs-pdaf${ENSstr}
+  echo `pwd`'/'$ENSstr'/hgs-pdaf' >> hgs-pdaf${ENSstr}
+  chmod +x hgs-pdaf${ENSstr}
+  
+  echo $((i-1))' ./hgs-pdaf'${ENSstr} >> mpmd.conf
+
+done
+cat mpmd.conf
+
+if [ -e mpmd-hgs.conf ];then
+  rm mpmd-hgs.conf
+fi
+touch mpmd-hgs.conf
+
+for((i=1;i<=$NENS;i++))
+do
+  ENSstr=`printf %03d $i`
+
+  echo '#!/bin/sh' > model${ENSstr}
+  echo 'cd '${ENSstr} >> model${ENSstr}
+  echo `pwd`'/'$ENSstr'/launch.sh' >> model${ENSstr}
+  chmod +x model${ENSstr}
+
+  echo $((i-1))' ./model'${ENSstr} >> mpmd-hgs.conf
+
+done
+cat mpmd-hgs.conf
+
+
+if [ -e mpmd-spinup.conf ];then
+  rm mpmd-spinup.conf
+fi
+touch mpmd-spinup.conf
+
+for((i=1;i<=$NENS;i++))
+do
+  ENSstr=`printf %03d $i`
+
+  echo '#!/bin/sh' > spinup${ENSstr}
+  echo 'cd '${ENSstr} >> spinup${ENSstr}
+  echo `pwd`'/'$ENSstr'/spinup.sh' >> spinup${ENSstr}
+  chmod +x spinup${ENSstr}
+
+  echo $((i-1))' ./spinup'${ENSstr} >> mpmd-spinup.conf
+
+done
+cat mpmd-spinup.conf
+
+# Check if this is the first time step. If yes, run spinup; if no, skip
+if [[ $firstrun = "T" ]]; then
+ for((ENS=1;ENS<=$NENS;ENS++))
+ do
+   ENSstr=`printf %03d $ENS`     # ensemble size should be less than 999, otherwise here we should use a lrager number
+   echo $ENSstr
+   export RUN_DIR=${ENS_DIR}${ENSstr}'/'                # output for all erstarts and model logs
+   cd $RUN_DIR
+   ln -s $HGS_DIR/grok HGS/grok
+   ln -s $HGS_DIR/phgs HGS/hgs
+   ln -s $HGS_DIR/hsplot HGS/hsplot
+ done
+ cd $ENS_DIR	
+ srun -l --propagate=STACK --multi-prog mpmd-spinup.conf &> spinup.out
+ firstrun=F 
+fi
+
+# time counter
+for((pdafstep=1;pdafstep<=$TSTEPS;pdafstep++))
+do
+ export step_counter=$pdafstep
+ echo $step_counter 
+ for((ENS=1;ENS<=$NENS;ENS++))
+ do
+   ENSstr=`printf %03d $ENS`     # ensemble size should be less than 999, otherwise here we should use a lrager number
+   echo $ENSstr
+   export RUN_DIR=${ENS_DIR}${ENSstr}'/'                # output for all erstarts and model logs
+   cd $RUN_DIR
+   cp temp.pdaf namelist.pdaf
+   sed -e "s@<pdafstep>@${step_counter}@g" \
+       namelist.pdaf > toto
+   mv toto namelist.pdaf
+   cp HGS/Grokfiles/wells/wells_flow_$step_counter.inc HGS/Grokfiles/wells_flow.inc
+ done
+ cd $ENS_DIR
+ srun -l --propagate=STACK --multi-prog mpmd-hgs.conf &> hgs.out.${step_counter}
+ srun -l --propagate=STACK --multi-prog mpmd.conf &> hgs-pdaf.out.${step_counter}
+ for((ENS=1;ENS<=$NENS;ENS++))
+ do
+   ENSstr=`printf %03d $ENS`
+   echo $ENSstr
+   export RUN_DIR=${ENS_DIR}${ENSstr}'/'
+   cd $RUN_DIR
+   cp HGS/Flowo.head_pm.0001 HGS/IC/Ini_pm
+   cp HGS/Flowo.head_olf.0001 HGS/IC/Ini_olf
+ done
+ cd $ENS_DIR
+done
+
