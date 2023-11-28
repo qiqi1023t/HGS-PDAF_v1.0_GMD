@@ -1,6 +1,6 @@
 # HGS-PDAF_v1.0_GMD
 November 28,2023
-This is the public reporsitory for HGS-PDAF. The codes are developed based on the development made by Dr. Wolfgang Kurtz (DWD, Germany) and Prof. Dr. Oliver S. Schilling (Uni Basel, Switzerland). It is currently being developed and maintained by Dr. Qi Tang at the University of Neuchâtel, Switzerland.
+This is the public repository for HGS-PDAF. The codes are developed based on the development made by Dr. Wolfgang Kurtz (DWD, Germany) and Prof. Dr. Oliver S. Schilling (Uni Basel, Switzerland). It is currently being developed and maintained by Dr. Qi Tang at the University of Neuchâtel, Switzerland.
 ## Introduction
 HGS-PDAF is a modular DA framework for integrated hydrological modelling based on PDAF and HGS. It allows updating of states and parameters in integrated flow and transport simulations, assimilate different observation data, alone or jointly.
 ## Getting started with HGS-PDAF
