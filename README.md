@@ -21,5 +21,7 @@ After the PDAF source code is downloaded to your local directory, make a copy in
 ## Test HGS-PDAF with the example test case
 With this simplified, three dimensional synthetic model, the user can easily test HGS-PDAF. All the model configuration files are included in the _examples_ directory. The following steps help the user to prepare running this test case on a Linux maschine:
 - Go to the _examples/3-D_synthetic_model_ directory. Use _tar -xzvf prior_ensemble.tar.gz_ to extract the ensemble of 100 realisations of hydraulic conductivity fields from the archive file. The following two files will be extracted:
-
+  - Prior_Ensemble.csv
+  - Prior_Ensemble_homogeneous.csv
+-  
 
