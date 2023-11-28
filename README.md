@@ -23,5 +23,5 @@ With this simplified, three dimensional synthetic model, the user can easily tes
 - Go to the _examples/3-D_synthetic_model_ directory. Use _tar -xzvf prior_ensemble.tar.gz_ to extract the ensemble of 100 realisations of hydraulic conductivity fields from the archive file. The following two files will be extracted:
   - Prior_Ensemble.csv
   - Prior_Ensemble_homogeneous.csv
--  
+- Prepare the initial ensemble of hydraulic conductivity fields based on these two .csv files. This can be done by simply modifying the python script _initialize.py_. For example, if the user wants to run a test simulation with ensemble size 2, this can be specified in line 9 as _Ensemble_size = 2_. One example script _init_100.py_ is geven for which an ensemble size of 100 is tested. After running this python script,  
 
