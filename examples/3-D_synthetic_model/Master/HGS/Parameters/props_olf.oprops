@@ -1,0 +1,24 @@
+Floodplain
+x friction
+8.1E-05
+y friction
+8.1E-05
+coupling length
+0.1
+rill storage height
+0.1
+obstruction storage height
+0.0
+end
+River
+x friction
+1.7E-06
+y friction
+1.7E-06
+coupling length
+0.001
+rill storage height
+0.1
+obstruction storage height
+0.0
+end

@@ -1,0 +1,578 @@
+!==================================================
+!============ Problem description =================
+!==================================================
+Synthetic Alluvial Model for Reference simulations
+---
+---
+H. Delottier last modification on 05.07.2022
+end title
+
+!=========================================================
+!================ Simple Grid generation =================
+!=========================================================
+read algomesh 2d grid
+../Mesh/SuperMesh.ah2
+
+include ../Mesh/3DGrid.inc
+
+mesh to tecplot
+SuperGrid.dat
+
+!=======================================
+!==== General simulation parameters ====
+!=======================================
+finite difference mode
+dual nodes for surface flow
+transient flow
+unsaturated
+
+units: kilogram-metre-day
+
+compute underrelaxation factor
+
+no nodal flow check
+
+!=======================================
+!============  SURFACE ==============
+!=======================================
+use domain type
+surface
+
+!---- Surface media properties----
+properties file
+./Parameters/props_olf.oprops
+
+! ===========  Surface properties =============
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose faces top am
+../Mesh/Selections/Floodplain_elements
+
+new zone
+1
+clear chosen zones
+choose zone number
+1
+read properties
+Floodplain
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose faces top am
+../Mesh/Selections/River_elements
+
+new zone
+2
+clear chosen zones
+choose zone number
+2
+read properties
+River
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+! --------------------------------
+!----- Boundary conditions --------
+! -------------------------------
+
+!----- INFLOW --------
+
+Choose nodes top am
+../Mesh/Selections/River_inflow
+
+create node set
+Inflow
+
+boundary condition	
+    type	
+     flux nodal	
+    name	
+     Inflow River	
+    node set	
+     Inflow
+    time value table
+    !0 185143
+    !0 61714
+    0 24685
+    end
+   tecplot output
+end
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+clear chosen segments
+
+!----- OUTFLOW --------
+
+Choose nodes top am
+../Mesh/Selections/River_outflow
+
+create segment set
+Outflow
+
+boundary condition	
+    type	
+     critical depth
+    name
+     Outflow River	
+    segment set	
+     Outflow	
+    tecplot output
+end
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+clear chosen segments
+
+! --------------------------------
+!----- Initial conditions for olf --------
+! -------------------------------
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+clear chosen segments
+
+choose nodes top
+
+initial head from output file
+./IC/Ini_olf_SS
+
+!initial water depth
+!1.0e-09
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+clear chosen segments
+
+!=======================================
+!============  SUBSURFACE ==============
+!=======================================
+use domain type
+porous media
+
+!read zones from file
+!./Grokfiles/Zones
+
+!limit zone output
+!10
+
+!---- Subsurface media properties----
+properties file
+./Parameters/props_pm.mprops
+
+! ===========  Subsurface properties =============
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose zones all
+
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+! ===========  Riverbed properties =============
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+1,2
+
+new zone
+16
+clear chosen zones
+choose zone number
+16
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+2,3
+
+new zone
+17
+clear chosen zones
+choose zone number
+17
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+3,4
+
+new zone
+18
+clear chosen zones
+choose zone number
+18
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+4,5
+
+new zone
+19
+clear chosen zones
+choose zone number
+19
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+5,6
+
+new zone
+20
+clear chosen zones
+choose zone number
+20
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+6,7
+
+new zone
+21
+clear chosen zones
+choose zone number
+21
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+7,8
+
+new zone
+22
+clear chosen zones
+choose zone number
+22
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+8,9
+
+new zone
+23
+clear chosen zones
+choose zone number
+23
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+9,10
+
+new zone
+24
+clear chosen zones
+choose zone number
+24
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+10,11
+
+new zone
+25
+clear chosen zones
+choose zone number
+25
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+11,12
+
+new zone
+26
+clear chosen zones
+choose zone number
+26
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+12,13
+
+new zone
+27
+clear chosen zones
+choose zone number
+27
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+13,14
+
+new zone
+28
+clear chosen zones
+choose zone number
+28
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+14,15
+
+new zone
+29
+clear chosen zones
+choose zone number
+29
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+Choose elements am
+../Mesh/Selections/River_elements
+15,16
+
+new zone
+30
+clear chosen zones
+choose zone number
+30
+read properties
+Aquifer
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+
+write zones to file
+Zones
+
+qwf
+
+SKIP ON 
+!---- Distributed HYDRAULIC CONDUCTIVITY ----
+
+Choose elements all
+
+read elemental K from file
+./Parameters/K.txt
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+SKIP OFF
+
+! --------------------------------
+!----- Boundary conditions --------
+! -------------------------------
+
+include ./Grokfiles/bc.inc
+
+include ./Grokfiles/recharge.inc
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+clear chosen segments
+
+! --------------------------------
+!----- Initial conditions for pm --------
+! -------------------------------
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+clear chosen segments
+
+Choose nodes all
+
+!initial head from output file
+!./IC/Ini_pm_SS
+
+initial head depth to water table
+1
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+clear chosen segments
+
+!======================================================
+! ============== Wells and Piezometers ================
+!======================================================
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+clear chosen segments
+
+include ./Grokfiles/Wells_flow.inc
+
+clear chosen zones
+clear chosen nodes
+clear chosen elements
+clear chosen faces
+clear chosen segments
+
+!=======================================
+!========= SIMULATION CONTROL ==========
+!=======================================
+
+
+!-------- Transient Solver (START) ----------------
+Initial time
+0.0
+initial timestep
+1.d-6
+minimum timestep
+1.157d-09 ! 1s
+
+Maximum timestep multiplier
+8
+Maximum timestep
+100.0
+
+Newton iteration control
+7
+Newton maximum iterations
+10
+
+Newton absolute convergence criteria
+1.d-05
+Newton residual convergence criteria
+100000
+
+
+Saturation control
+100
+
+newton information
+!--------output times------------
+
+output times
+1.d-6
+end
+
+SKIP ON
+!=======================================
+!========= OBSERVATIONS ================
+!=======================================
+
+include ./Grokfiles/observation_pts.inc
+SKIP OFF
+

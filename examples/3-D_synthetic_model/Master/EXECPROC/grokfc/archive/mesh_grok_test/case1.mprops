@@ -1,0 +1,26 @@
+!------------------------------------------
+porous_medium
+
+!k isotropic
+!0.4
+
+specific storage
+1.e-5
+
+porosity
+0.4
+
+longitudinal dispersivity
+1.0
+
+transverse dispersivity
+0.1
+
+vertical transverse dispersivity
+0.1
+
+tortuosity
+2.5
+
+end material
+!------------------------------------------

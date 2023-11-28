@@ -1,0 +1,172 @@
+!_______________________ title
+
+Versuch vier horst.erfolg
+end title
+
+!_______________________ grid definition
+
+!generate uniform prisms
+!140.000 7 !250.0 50
+!60.000 4 !250.0 50
+!5.000 1   ! 5.000 1
+!end
+
+read 3d grid, ascii
+end grid definition
+
+control volume
+
+
+!_______________________ porous media properties
+
+use domain type
+porous media
+
+properties file
+case1.mprops 
+
+clear chosen zones
+choose zones all
+
+read properties
+porous_medium
+
+
+
+!_______________________ solver parameters / time control
+
+
+units: kilogram-metre-second
+
+
+Generate target times
+0.0000001       !start time
+0.000001            !initial time step
+2.0                 !multiplier
+0.50                !max. timestep
+1000.0               !end time
+
+
+output times
+0.001000
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4
+4.5
+5
+5.5
+6
+
+end
+    
+!Concentration control
+!0.050000
+
+
+
+
+!_______________________ initial conditions for flow
+
+clear chosen nodes
+choose nodes all
+
+initial head
+12.0   
+
+
+!_______________________ boundary conditions for flow
+
+clear chosen nodes
+
+choose nodes x plane
+0.0
+1.e-5
+
+!choose nodes y plane
+!0.0
+!1.e-5
+
+!choose nodes y plane
+!65.0
+!1.e-5
+
+create node set
+lateral_bc1
+
+boundary condition
+
+    type
+    head
+    
+    name
+    head_14
+    
+    node set 
+    lateral_bc1
+    
+    time value table
+       0.0  14.0
+    end
+    
+    tecplot output
+
+end
+
+clear chosen nodes
+
+choose nodes x plane
+120
+1.e-5
+
+!choose nodes y plane
+!0.0
+!1.e-5
+
+!choose nodes y plane
+!65.0
+!1.e-5
+
+create node set
+lateral_bc2
+
+boundary condition
+
+    type 
+    head
+
+    name
+    head_11
+
+    node set
+    lateral_bc2
+
+    time value table
+        0.0 11.0
+    end
+
+    tecplot output
+
+end
+
+clear chosen nodes
+
+
+!_______________________ solver parameters 2
+flow solver convergence criteria
+1.0e-12
+!1.0e-12
+
+!transport solver convergence criteria
+!1.0e-10
+!1.0d-12
+
+!Flux limiter for transport
+
+
+Read elemental k from file
+case_neuo.elemental_k
